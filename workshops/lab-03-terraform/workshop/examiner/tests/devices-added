@@ -1,0 +1,23 @@
+#!/bin/bash
+# Step 4: edge-rtr01 and edge-rtr02 are in main.tf's devices map (not given
+# with -var), and applied.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+has_device edge-rtr01 10.0.0.21 ||
+    fail 'main.tf has no edge-rtr01 = "10.0.0.21": add it to the devices default, in the file (step 4)'
+has_device edge-rtr02 10.0.0.22 ||
+    fail 'main.tf has no edge-rtr02 = "10.0.0.22": add it to the devices default, in the file (step 4)'
+
+count=$(configs_in_state | wc -l)
+[ "$count" -ge 3 ] ||
+    fail "main.tf has three devices, but only $count are applied: terraform apply, then type yes"
+
+for device in core-sw01 edge-rtr01 edge-rtr02; do
+    [ -f "$TF/configs/$device.cfg" ] ||
+        fail "configs/$device.cfg is missing: terraform apply"
+done
+
+pass "three devices in main.tf, three configs rendered"

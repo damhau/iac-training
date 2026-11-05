@@ -1,0 +1,28 @@
+#!/bin/bash
+# Step 3: init, fmt, validate and apply have run: the provider is installed,
+# main.tf is formatted and valid, core-sw01's config is rendered and in the
+# state, and the output lists it.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+grep -qs 'registry.terraform.io/hashicorp/local' "$TF/.terraform.lock.hcl" ||
+    fail "terraform init hasn't run in tf-lab yet: cd ~/exercises/tf-lab, then terraform init"
+
+errors=$(tf validate -no-color 2>&1) ||
+    fail "terraform validate fails: $(grep -m 1 'Error:' <<<"$errors")"
+
+tf fmt -check >/dev/null 2>&1 ||
+    fail "main.tf isn't formatted: terraform fmt"
+
+configs_in_state | grep -qxF 'local_file.config["core-sw01"]' ||
+    fail "core-sw01 isn't in the state yet: terraform apply, then type yes"
+
+grep -qsx 'hostname core-sw01' "$TF/configs/core-sw01.cfg" ||
+    fail "configs/core-sw01.cfg is missing: terraform apply puts it back"
+
+tf output -json config_files 2>/dev/null | grep -q 'core-sw01\.cfg' ||
+    fail "the output config_files doesn't list core-sw01.cfg: terraform apply"
+
+pass "terraform apply rendered configs/core-sw01.cfg, and the output config_files lists it"

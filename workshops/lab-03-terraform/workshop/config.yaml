@@ -1,0 +1,20 @@
+# The Hugo renderer's page order. Page titles come from each page's front
+# matter.
+pathways:
+  default: lab
+
+  paths:
+    lab:
+      title: "Lab 3: manage infrastructure declaratively"
+      steps:
+        - 00-overview
+        - 01-project
+        - 02-main-tf
+        - 03-workflow
+        - 04-add-devices
+        - 05-drift
+        - 06-state-destroy
+        - 07-gitignore
+        - 08-stretch
+        - 09-push
+        - 99-summary

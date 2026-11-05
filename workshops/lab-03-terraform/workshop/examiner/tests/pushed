@@ -1,0 +1,42 @@
+#!/bin/bash
+# Last page, required for Session 4: tf-lab is a Git repository whose main is
+# on github.com/<login>/tf-lab, public, with main.tf and the lock file, and no
+# state or variable files.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+github_login
+
+[ -d "$TF/.git" ] ||
+    fail "tf-lab isn't a Git repository yet: cd ~/exercises/tf-lab, then git init"
+
+gh api "repos/$SLUG" --silent 2>/dev/null ||
+    fail "no repository github.com/$SLUG: create it on GitHub, public and empty"
+visibility=$(gh api "repos/$SLUG" --jq .visibility)
+[ "$visibility" = public ] ||
+    fail "github.com/$SLUG is $visibility: make it public (its Settings, at the bottom: Change visibility)"
+
+url=$(git -C "$TF" remote get-url origin 2>/dev/null) ||
+    fail "no remote named origin: git remote add origin https://github.com/$SLUG.git"
+shopt -s nocasematch
+case $url in
+    "https://github.com/$SLUG" | "https://github.com/$SLUG.git" | \
+        "git@github.com:$SLUG" | "git@github.com:$SLUG.git") ;;
+    *) fail "origin is $url, not your GitHub repository: git remote set-url origin https://github.com/$SLUG.git" ;;
+esac
+shopt -u nocasematch
+
+files=$(gh api "repos/$SLUG/git/trees/main?recursive=1" --jq '.tree[].path' 2>/dev/null) ||
+    fail "main isn't on GitHub yet: git push -u origin main"
+
+leaked=$(grep -m 1 -E '\.tfstate(\.|$)|\.tfvars$|^\.terraform/' <<<"$files")
+[ -z "$leaked" ] ||
+    fail "GitHub has $leaked, which must stay out of Git: git rm --cached $leaked, check .gitignore (step 7), commit and push. It stays in the history: for real state, rotate what it holds"
+
+for want in main.tf .terraform.lock.hcl; do
+    grep -qxF "$want" <<<"$files" ||
+        fail "GitHub's main has no $want: git add $want, git commit, git push"
+done
+
+pass "github.com/$SLUG has main.tf and the lock file, and no state"

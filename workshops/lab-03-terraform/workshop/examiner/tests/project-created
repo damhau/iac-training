@@ -1,0 +1,8 @@
+#!/bin/bash
+# Step 1: the tf-lab folder exists.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+pass "${TF/#"$HOME"/\~} is there"

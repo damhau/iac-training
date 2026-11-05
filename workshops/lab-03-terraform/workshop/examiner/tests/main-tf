@@ -1,0 +1,21 @@
+#!/bin/bash
+# Step 2: tf-lab/main.tf declares the provider, the two variables, a config
+# file per device and the output.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+if [ ! -f "$TF/main.tf" ]; then
+    [ ! -f "$HOME/exercises/main.tf" ] ||
+        fail "main.tf is in ~/exercises, not in tf-lab: mv ~/exercises/main.tf ~/exercises/tf-lab/"
+    fail "no main.tf in tf-lab yet: cd ~/exercises/tf-lab, then paste the whole block (step 2)"
+fi
+
+for want in 'hashicorp/local' 'variable "devices"' 'variable "ntp_server"' \
+    'resource "local_file" "config"' 'output "config_files"'; do
+    grep -qF "$want" "$TF/main.tf" ||
+        fail "main.tf has no $want: paste the whole block again (step 2)"
+done
+
+pass "main.tf declares the devices, a config file for each, and an output"

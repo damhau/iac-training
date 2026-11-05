@@ -1,0 +1,22 @@
+# Sourced by every terminal shell.
+#
+# Terraform: no check for newer versions (the version is pinned in
+# resources/workshop.yaml), and Tab completes its commands.
+#
+# The GitHub CLI, for the last page: no usage data sent to GitHub, no notices
+# about newer versions.
+#
+# The prompt shows the Git branch, as in Lab 1, once tf-lab is a repository:
+#   ~/exercises/tf-lab (main)$
+
+export CHECKPOINT_DISABLE=1
+complete -C terraform terraform
+
+export GH_TELEMETRY=0
+export GH_NO_UPDATE_NOTIFIER=1
+
+if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+    . /usr/share/git-core/contrib/completion/git-prompt.sh
+    GIT_PS1_SHOWDIRTYSTATE=1
+    PS1='\[\e[1;34m\]\w\[\e[0m\]$(__git_ps1 " (%s)")\$ '
+fi

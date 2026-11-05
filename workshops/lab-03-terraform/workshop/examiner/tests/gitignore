@@ -1,0 +1,29 @@
+#!/bin/bash
+# Step 7: tf-lab/.gitignore keeps the state, .terraform/, *.tfvars and the
+# rendered configs out of Git, and not main.tf or the lock file. Tried with
+# git check-ignore in a scratch repository of the check's own, since tf-lab
+# isn't one yet.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+[ -f "$TF/.gitignore" ] ||
+    fail "no .gitignore in tf-lab: paste the printf line, from inside tf-lab (step 7)"
+
+try=$HOME/.cache/gitignore-check
+mkdir -p "$try/.terraform/providers" "$try/configs"
+git init -q "$try"
+cp "$TF/.gitignore" "$try/.gitignore"
+
+for path in terraform.tfstate terraform.tfstate.backup secrets.tfvars \
+    .terraform/providers/x configs/core-sw01.cfg; do
+    git -C "$try" check-ignore -q "$path" ||
+        fail ".gitignore doesn't keep $path out of Git: paste the printf line again (step 7)"
+done
+for path in main.tf .terraform.lock.hcl; do
+    ! git -C "$try" check-ignore -q "$path" ||
+        fail ".gitignore also ignores $path, which belongs in Git: remove its line"
+done
+
+pass ".gitignore keeps the state, .terraform/, *.tfvars and configs/ out of Git"

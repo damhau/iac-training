@@ -1,0 +1,31 @@
+#!/bin/bash
+# Step 5: the out-of-band changes were made and terraform apply undid them:
+# no hand-made route, edge-rtr02.cfg back, and nothing left to plan.
+#
+# That they were made at all: core-sw01.cfg was written in step 3 and
+# edge-rtr01.cfg in step 4, so core-sw01.cfg is newer only if apply wrote it
+# again since.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+cfg=$TF/configs
+
+[ -f "$cfg/edge-rtr02.cfg" ] ||
+    fail "configs/edge-rtr02.cfg is missing: terraform plan, then terraform apply"
+[ -f "$cfg/core-sw01.cfg" ] && [ -f "$cfg/edge-rtr01.cfg" ] ||
+    fail "configs from steps 3 and 4 are missing: terraform apply"
+! grep -q '^ip route' "$cfg/core-sw01.cfg" ||
+    fail "core-sw01.cfg still has the hand-made route: terraform plan, then terraform apply"
+
+tf plan -lock=false -no-color -detailed-exitcode >/dev/null 2>&1
+case $? in
+    0) ;;
+    2) fail "terraform plan still shows changes: terraform apply, then type yes" ;;
+    *) fail "terraform plan fails: run it to see why" ;;
+esac
+
+[ "$cfg/core-sw01.cfg" -nt "$cfg/edge-rtr01.cfg" ] ||
+    fail "no drift healed yet: core-sw01.cfg is unchanged since step 4. Make the two hand changes (the echo and the rm), then terraform plan and terraform apply"
+
+pass "the hand-made route is gone and edge-rtr02.cfg is back: terraform plan finds no drift"

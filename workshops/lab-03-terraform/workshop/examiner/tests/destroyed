@@ -1,0 +1,19 @@
+#!/bin/bash
+# Step 6: terraform destroy has run: a state that once held configs is empty,
+# and the config files are gone.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_project
+
+[ -f "$TF/terraform.tfstate" ] ||
+    fail "no terraform.tfstate in tf-lab: terraform apply hasn't run there (step 3)"
+
+count=$(tf state list 2>/dev/null | wc -l)
+[ "$count" -eq 0 ] ||
+    fail "the state still lists $count resources: terraform destroy, then type yes"
+
+! ls "$TF"/configs/*.cfg >/dev/null 2>&1 ||
+    fail "the state is empty but configs/ still has files: terraform apply, then terraform destroy"
+
+pass "terraform destroy deleted every config it managed, and the state is empty"

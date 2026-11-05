@@ -7,3 +7,4 @@ kind: Kustomization
 resources:
   - lab-01-git/resources/workshop.yaml
   - lab-02-github/resources/workshop.yaml
+  - lab-03-terraform/resources/workshop.yaml

@@ -1,0 +1,72 @@
+# Lab 3 as an Educates workshop. Argo CD applies it (the educates-portal-iac
+# Application in k8s-argocd, through ../../kustomization.yaml) and the hv-iac
+# TrainingPortal lists it.
+#
+# Each new session downloads this folder from main (newRootPath), so a pushed
+# change to the instructions, setup or checks reaches the next session started.
+# Changes to this file make the portal replace the workshop environment
+# (portal.updates.workshop).
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: lab-03-terraform
+spec:
+  title: "Lab 3: manage infrastructure declaratively"
+  description: >-
+    Session 3, Terraform. Render one config file per device with Terraform,
+    and run init, plan, apply, drift and destroy end to end.
+  url: https://github.com/damhau/iac-training/tree/main/workshops/lab-03-terraform
+  difficulty: beginner
+  duration: 2h
+  vendor: dhconsulting.ch
+  tags:
+    - terraform
+    - iac
+    - netops
+  workshop:
+    # Each entry is synced on its own, in this order, into /opt/assets/files,
+    # then copied into the learner's home, dot folders included. The first
+    # replaces the whole folder, so the others, inside it, must come after.
+    files:
+      - git:
+          url: https://github.com/damhau/iac-training
+          ref: origin/main
+        # vendir applies includePaths before newRootPath, to the repo's full
+        # paths; with no includePaths the whole folder is used.
+        newRootPath: workshops/lab-03-terraform
+      # Terraform, not in the base image. Lands in ~/.local/bin, first on
+      # PATH; terraform init then downloads the hashicorp/local provider from
+      # the Terraform registry. To upgrade: the version in both places, and the
+      # sha256 from the release's terraform_<version>_SHA256SUMS.
+      - path: .local/bin
+        http:
+          url: https://releases.hashicorp.com/terraform/1.17.1/terraform_1.17.1_linux_amd64.zip
+          sha256: 4638628058e71a55212b1c563712eac03b902128f40740f3dc8174df12135061
+        includePaths:
+          - terraform
+      # The GitHub CLI, as in Lab 2: the last page pushes tf-lab to GitHub,
+      # signed in with gh. In ~/bin, also on PATH; a folder of its own, since
+      # each entry replaces its folder. To upgrade: the version in all four
+      # places, and the sha256 from the release's checksums.txt.
+      - path: bin
+        http:
+          url: https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz
+          sha256: 4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d
+        includePaths:
+          - gh_2.103.3_linux_amd64/bin/gh
+        newRootPath: gh_2.103.3_linux_amd64/bin
+  session:
+    namespaces:
+      security:
+        # Terraform's local provider only: no Kubernetes token in the session,
+        # so a learner's shell can't reach the cluster API.
+        token:
+          enabled: false
+    applications:
+      # VS Code in the browser, opened on ~/exercises: main.tf, and the second
+      # hour's template. Raises the session's memory from 512Mi to 1Gi.
+      editor:
+        enabled: true
+      # The check buttons (workshop/examiner/tests).
+      examiner:
+        enabled: true
