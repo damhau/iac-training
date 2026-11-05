@@ -1,0 +1,14 @@
+#!/bin/bash
+# Before you start: gh is signed in to github.com, and Git uses it for HTTPS
+# (the "Authenticate Git with your GitHub credentials?" question, or
+# gh auth setup-git).
+
+. "$(dirname "$0")/../lib.sh"
+
+github_login
+
+git config --global --get-all credential.https://github.com.helper 2>/dev/null |
+    grep -q 'auth git-credential' ||
+    fail "signed in as $LOGIN, but git push won't use it: gh auth setup-git"
+
+pass "signed in to GitHub as $LOGIN"

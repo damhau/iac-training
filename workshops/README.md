@@ -6,6 +6,7 @@ a Linux terminal and VS Code, in a session of its own on the hetzner-talos clust
 | Lab | Folder | Portal |
 | --- | --- | --- |
 | Lab 1: version your network configs (Git) | [`lab-01-git`](lab-01-git) | `hv-iac` |
+| Lab 2: propose a change like a CAB (GitHub) | [`lab-02-github`](lab-02-github) | `hv-iac` |
 
 Learners open the portal at <https://hv-iac-ui.edu.dhconsulting.ch>, enter the event access code, and pick a
 lab.

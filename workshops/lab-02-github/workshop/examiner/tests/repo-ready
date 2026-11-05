@@ -1,0 +1,18 @@
+#!/bin/bash
+# Before you start: ~/exercises/netops-lab holds the Session 1 history, and
+# origin no longer points at the bundle it was cloned from.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+has_branch main ||
+    fail "netops-lab has no main branch: clone the bundle again (Before you start: your repo)"
+g cat-file -e main:devices/core-sw01.cfg 2>/dev/null ||
+    fail "main has no devices/core-sw01.cfg: is this the netops-lab from Session 1?"
+
+case $(g remote get-url origin 2>/dev/null) in
+    *.bundle) fail "origin still points at the bundle file: from ~/exercises/netops-lab, git remote remove origin" ;;
+esac
+
+pass "netops-lab has $(g rev-list --count main) commits on main"

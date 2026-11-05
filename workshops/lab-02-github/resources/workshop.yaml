@@ -1,0 +1,68 @@
+# Lab 2 as an Educates workshop. Argo CD applies it (the educates-portal-iac
+# Application in k8s-argocd, through ../../kustomization.yaml) and the hv-iac
+# TrainingPortal lists it.
+#
+# Each new session downloads this folder from main (newRootPath), so a pushed
+# change to the instructions, setup or checks reaches the next session started.
+# Changes to this file make the portal replace the workshop environment
+# (portal.updates.workshop).
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: lab-02-github
+spec:
+  title: "Lab 2: propose a change like a CAB"
+  description: >-
+    Session 2, GitHub. Push the netops-lab repository to GitHub and run a
+    change through issue, branch, pull request, review and merge.
+  url: https://github.com/damhau/iac-training/tree/main/workshops/lab-02-github
+  difficulty: beginner
+  duration: 2h
+  vendor: dhconsulting.ch
+  tags:
+    - git
+    - github
+    - netops
+  workshop:
+    # Each entry is synced on its own, in this order, into /opt/assets/files,
+    # then copied into the learner's home. The first replaces the whole
+    # folder, so the second, inside it, must come after.
+    files:
+      - git:
+          url: https://github.com/damhau/iac-training
+          ref: origin/main
+        # vendir applies includePaths before newRootPath, to the repo's full
+        # paths; with no includePaths the whole folder is used.
+        newRootPath: workshops/lab-02-github
+      # The GitHub CLI, not in the base image: learners sign in with it, and
+      # the checks read GitHub through it. Lands in ~/bin, on PATH;
+      # setup.d/02-gh.sh restores its executable bit, which vendir drops when
+      # it unpacks an HTTP download. To upgrade: the version in all four
+      # places, and the sha256 from the release's checksums.txt.
+      - path: bin
+        http:
+          url: https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz
+          sha256: 4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d
+        includePaths:
+          - gh_2.103.3_linux_amd64/bin/gh
+        newRootPath: gh_2.103.3_linux_amd64/bin
+  session:
+    namespaces:
+      security:
+        # Git and GitHub only: no Kubernetes token in the session, so a
+        # learner's shell can't reach the cluster API.
+        token:
+          enabled: false
+    applications:
+      # VS Code in the browser, opened on ~/exercises: the second hour's
+      # README. Raises the session's memory from 512Mi to 1Gi.
+      editor:
+        enabled: true
+      # The check buttons (workshop/examiner/tests).
+      examiner:
+        enabled: true
+      # The first page's upload of the learner's Lab 1 bundle, as
+      # ~/uploads/netops-lab.bundle.
+      uploads:
+        enabled: true
+        directory: uploads

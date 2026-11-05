@@ -1,0 +1,12 @@
+#!/bin/bash
+# Step 3: an issue about SNMP is open, or was (step 7 closes it).
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_issue
+
+[ -n "$ISSUE" ] ||
+    fail "no issue with SNMP in its title on github.com/$SLUG: open one, Add read-only SNMP community to core-sw01 (step 3)"
+
+pass "issue #$ISSUE: $(gh issue view "$ISSUE" -R "$SLUG" --json title --jq .title)"

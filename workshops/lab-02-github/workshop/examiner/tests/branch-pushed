@@ -1,0 +1,20 @@
+#!/bin/bash
+# Step 4: change/add-snmp is on GitHub with the SNMP line; or its pull
+# request exists, since GitHub offers to delete the branch once it's merged.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+[ -z "$PR" ] ||
+    pass "change/add-snmp is on GitHub, with pull request #$PR"
+
+config=$(gh api "repos/$SLUG/contents/devices/core-sw01.cfg?ref=change/add-snmp" \
+    -H "Accept: application/vnd.github.raw" 2>/dev/null) ||
+    fail "no branch change/add-snmp on github.com/$SLUG yet: git push -u origin change/add-snmp"
+
+grep -qxF "snmp-server community READONLY ro" <<<"$config" ||
+    fail "change/add-snmp on GitHub has no SNMP line in devices/core-sw01.cfg: commit it, then git push"
+
+pass "change/add-snmp is on GitHub, with the SNMP line"

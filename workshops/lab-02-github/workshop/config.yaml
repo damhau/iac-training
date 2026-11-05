@@ -1,0 +1,22 @@
+# The Hugo renderer's page order. Page titles come from each page's front
+# matter.
+pathways:
+  default: lab
+
+  paths:
+    lab:
+      title: "Lab 2: propose a change like a CAB"
+      steps:
+        - 00-overview
+        - 01-your-repo
+        - 02-sign-in
+        - 03-create-repo
+        - 04-push
+        - 05-issue
+        - 06-branch
+        - 07-pull-request
+        - 08-review
+        - 09-merge
+        - 10-clean-up
+        - 11-stretch
+        - 99-summary

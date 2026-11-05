@@ -1,0 +1,23 @@
+#!/bin/bash
+# Step 7: the pull request is merged, and so the issue it links is closed.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+[ -n "$PR" ] ||
+    fail "no pull request from change/add-snmp yet (step 5)"
+
+state=$(pr_field state .state)
+[ "$state" = MERGED ] ||
+    fail "pull request #$PR is ${state,,}, not merged: Merge pull request on GitHub"
+
+find_issue
+[ -n "$ISSUE" ] ||
+    fail "pull request #$PR is merged, but there's no SNMP issue to close (step 3)"
+
+[ "$(gh issue view "$ISSUE" -R "$SLUG" --json state --jq .state)" = CLOSED ] ||
+    fail "pull request #$PR is merged but issue #$ISSUE is still open: its description needed Closes #$ISSUE. Close the issue on GitHub"
+
+pass "pull request #$PR is merged, and issue #$ISSUE closed"

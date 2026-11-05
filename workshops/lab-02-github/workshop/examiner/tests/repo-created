@@ -1,0 +1,12 @@
+#!/bin/bash
+# Step 1: github.com/<login>/netops-lab exists and is public.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+
+visibility=$(gh api "repos/$SLUG" --jq .visibility)
+[ "$visibility" = public ] ||
+    fail "github.com/$SLUG is $visibility: make it public (its Settings, at the bottom: Change visibility)"
+
+pass "github.com/$SLUG exists and is public"

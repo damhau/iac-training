@@ -1,0 +1,28 @@
+#!/bin/bash
+# Step 2: origin is the learner's netops-lab on GitHub, and main is pushed to
+# it and tracks it (git push -u).
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+github_repo
+
+url=$(g remote get-url origin 2>/dev/null) ||
+    fail "no remote named origin: git remote add origin https://github.com/$SLUG.git"
+
+shopt -s nocasematch
+case $url in
+    "https://github.com/$SLUG" | "https://github.com/$SLUG.git" | \
+        "git@github.com:$SLUG" | "git@github.com:$SLUG.git") ;;
+    *) fail "origin is $url, not your GitHub repository: git remote set-url origin https://github.com/$SLUG.git" ;;
+esac
+shopt -u nocasematch
+
+remote=$(g ls-remote --heads origin main 2>/dev/null) ||
+    fail "can't read github.com/$SLUG from here: gh auth status, then try again"
+[ -n "$remote" ] ||
+    fail "main isn't on GitHub yet: git push -u origin main"
+[ "$(g config branch.main.remote)" = origin ] ||
+    fail "main is on GitHub but doesn't track it: git push -u origin main"
+
+pass "main is on github.com/$SLUG"

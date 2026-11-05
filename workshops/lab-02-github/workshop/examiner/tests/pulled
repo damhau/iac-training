@@ -1,0 +1,24 @@
+#!/bin/bash
+# Step 8: local main has the merge commit from GitHub, and the local
+# change/add-snmp branch is deleted.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+github_repo
+find_pr
+
+[ -n "$PR" ] ||
+    fail "no pull request from change/add-snmp yet (step 5)"
+
+merge=$(pr_field mergeCommit '.mergeCommit.oid // empty')
+[ -n "$merge" ] ||
+    fail "pull request #$PR isn't merged yet (step 7)"
+
+g cat-file -e "$merge^{commit}" 2>/dev/null && g merge-base --is-ancestor "$merge" main ||
+    fail "your main doesn't have the merge from GitHub yet: git switch main, then git pull"
+
+! has_branch change/add-snmp ||
+    fail "the branch change/add-snmp is still here: git branch -d change/add-snmp"
+
+pass "main has the merge, $(g rev-parse --short "$merge"), and change/add-snmp is deleted"

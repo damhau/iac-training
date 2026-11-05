@@ -1,0 +1,22 @@
+#!/bin/bash
+# Before you start: user.name and user.email are set, and not the
+# placeholders. The e-mail should be the GitHub account's, so GitHub links
+# the commits to it; the check can't know that one.
+
+. "$(dirname "$0")/../lib.sh"
+
+name=$(git config --global user.name) ||
+    fail 'user.name is not set: git config --global user.name "Your Name"'
+email=$(git config --global user.email) ||
+    fail 'user.email is not set: git config --global user.email "you@example.com"'
+
+[ "$name" != "Your Name" ] ||
+    fail "user.name is still the placeholder: put your own name between the quotes"
+[ "$email" != "you@example.com" ] ||
+    fail "user.email is still the placeholder: put your GitHub account's e-mail between the quotes"
+case $email in
+    *@*) ;;
+    *) fail "user.email '$email' doesn't look like an e-mail address" ;;
+esac
+
+pass "commits will say $name <$email>"

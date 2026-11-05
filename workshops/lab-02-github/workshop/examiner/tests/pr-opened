@@ -1,0 +1,26 @@
+#!/bin/bash
+# Step 5: a pull request from change/add-snmp into main, linked to an issue
+# by "Closes #N" in its description.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+[ -n "$PR" ] ||
+    fail "no pull request from change/add-snmp yet: open one on GitHub, into main (step 5)"
+
+base=$(pr_field baseRefName .baseRefName)
+[ "$base" = main ] ||
+    fail "pull request #$PR goes into $base: edit it on GitHub and set the base to main"
+
+issue=$(pr_field closingIssuesReferences '.closingIssuesReferences[0].number // empty')
+if [ -z "$issue" ]; then
+    # The description, in case GitHub no longer lists the link once merged.
+    issue=$(pr_field body .body |
+        grep -oiE '\b(close[sd]?|fix(e[sd])?|resolve[sd]?) #[0-9]+' | head -n 1 | grep -oE '[0-9]+$') || true
+fi
+[ -n "$issue" ] ||
+    fail "pull request #$PR isn't linked to an issue: edit its description on GitHub and add Closes #1 (your issue's number)"
+
+pass "pull request #$PR closes issue #$issue"

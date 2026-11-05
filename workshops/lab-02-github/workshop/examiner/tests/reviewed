@@ -1,0 +1,18 @@
+#!/bin/bash
+# Step 6: the learner's pull request has a review: the partner's approval or,
+# working alone, a comment on a line of the diff (also a review, "commented").
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+[ -n "$PR" ] ||
+    fail "no pull request from change/add-snmp yet (step 5)"
+
+reviews=$(pr_field reviews \
+    '[.reviews[] | "\(.state | ascii_downcase | sub("_"; " ")) by \(.author.login)"] | unique | join(", ")')
+[ -n "$reviews" ] ||
+    fail "no review on pull request #$PR yet: send your partner its link, or comment on a line of your own diff"
+
+pass "pull request #$PR: $reviews"
