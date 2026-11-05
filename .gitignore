@@ -1,0 +1,14 @@
+# Local tooling, not part of the cluster config.
+.claude/
+.idea
+.vscode
+
+# Empty placeholders the Claude Code sandbox leaves at the repo root.
+.bash_profile
+.bashrc
+.gitconfig
+.gitmodules
+.profile
+.ripgreprc
+.zprofile
+.zshrc

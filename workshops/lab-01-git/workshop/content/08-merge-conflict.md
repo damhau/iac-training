@@ -11,7 +11,9 @@ text: git merge feature/add-syslog
 ```
 
 Git stops with `CONFLICT (content): Merge conflict in devices/core-sw01.cfg`. Both branches changed the same
-line, and Git won't guess which syslog target is right. The prompt shows `(main|MERGING)`.
+line, and Git won't guess which syslog target is right. The merge is now in progress: the prompt ends in
+`|MERGING` until you finish it below. Don't run `git merge` again meanwhile; Git would only answer
+`Merging is not possible because you have unmerged files`.
 
 ```workshop:copy
 prefix: Copy
@@ -19,7 +21,16 @@ title: click, then paste into the terminal
 text: git status
 ```
 
-The file now looks like this:
+`git status` lists the file under *Unmerged paths*, as `both modified: devices/core-sw01.cfg`: it changed
+on both branches. Git has written both versions into it. Show it:
+
+```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
+text: cat devices/core-sw01.cfg
+```
+
+You see:
 
 ```text
 hostname core-sw01
