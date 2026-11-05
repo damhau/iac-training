@@ -17,16 +17,18 @@ You treat a small folder of mock network configs the way you would treat real de
   machine.
 - Type the commands yourself: getting them into your fingers is the point. Each command block has a copy
   button for long lines: paste into the terminal, check it, press Enter.
-- Most steps end with a **check**. Click it: green means the step is done. If it turns red, the command
-  below prints the reason.
+- Most steps end with a blue **Check** box. Click it: green means the step is done. If it turns red, the
+  command at the end of this section prints the reason.
 - The prompt shows the branch you're on, for example `~/exercises/netops-lab (main)`, and `|MERGING` while a
   merge is in progress. A `*` after the branch means unstaged changes, a `+` staged ones.
 - The session lasts 2 hours. When the timer at the top turns orange, click it to add time.
 - Nothing here touches a real device or the cluster: this machine has Git, an editor and no other access.
 
-Why did a check fail:
+When a check turns red, paste this into the terminal to see why:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: tail -n 1 ~/.local/share/workshop/examiner-scripts.log
 ```
 

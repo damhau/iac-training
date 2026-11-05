@@ -12,21 +12,29 @@ them from memory.
 Make a change and stage it:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: |-
   echo "snmp-server community public ro" >> devices/edge-rtr01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git add devices/edge-rtr01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git status
 ```
 
 It's in the candidate, under "Changes to be committed". Take it out again without losing the edit:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git restore --staged devices/edge-rtr01.cfg
 ```
 
@@ -34,10 +42,14 @@ text: git restore --staged devices/edge-rtr01.cfg
 edit itself:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git restore devices/edge-rtr01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git status
 ```
 
@@ -48,6 +60,8 @@ text: git status
 ## Your history as a graph
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git log --oneline --graph --all
 ```
 

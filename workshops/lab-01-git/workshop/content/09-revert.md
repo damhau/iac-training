@@ -5,15 +5,21 @@ title: "Step 8: practise rollback"
 A bad change reaches `main`: someone removes the primary NTP server.
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: |-
   echo "no ntp server 10.0.0.1" >> devices/core-sw01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git commit -am "Remove primary NTP server from core-sw01"
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git log --oneline
 ```
 
@@ -21,6 +27,8 @@ Roll it back. `git revert` doesn't erase anything: it adds a new commit that doe
 name. On a shared branch that is the safe undo, like a rollback change with its own record.
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git revert HEAD
 ```
 
@@ -29,10 +37,14 @@ text: git revert HEAD
 nano closes.
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git log --oneline
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: cat devices/core-sw01.cfg
 ```
 
@@ -42,6 +54,8 @@ Emptied the message by mistake? Git then says `Aborting commit due to empty comm
 revert staged, and a second `git revert` refuses to run. Unstage and discard it, then revert again:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git restore --staged --worktree devices/core-sw01.cfg
 ```
 
@@ -51,6 +65,8 @@ the merge commit, and Git refuses that without the extra `-m` option, which says
 {{< /note >}}
 
 ```examiner:execute-test
+prefix: Check
+description: Click to check this step
 name: reverted
 title: The bad change is reverted
 ```

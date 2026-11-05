@@ -5,6 +5,8 @@ title: "Step 7: merge and resolve the conflict"
 Bring the feature branch into `main`:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git merge feature/add-syslog
 ```
 
@@ -12,6 +14,8 @@ Git stops with `CONFLICT (content): Merge conflict in devices/core-sw01.cfg`. Bo
 line, and Git won't guess which syslog target is right. The prompt shows `(main|MERGING)`.
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git status
 ```
 
@@ -35,6 +39,8 @@ delete the 10.0.0.99 line and the three marker lines.
 Edit the file in nano:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: nano devices/core-sw01.cfg
 ```
 
@@ -64,14 +70,20 @@ logging host 10.0.0.50
 Mark the file resolved, and conclude the merge with its own commit:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git add devices/core-sw01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git commit -m "Merge syslog change, keep 10.0.0.50 as agreed"
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git log --oneline --graph --all
 ```
 
@@ -83,6 +95,8 @@ this step again.
 {{< /note >}}
 
 ```examiner:execute-test
+prefix: Check
+description: Click to check this step
 name: merge-resolved
 title: The conflict is resolved and main keeps 10.0.0.50
 ```

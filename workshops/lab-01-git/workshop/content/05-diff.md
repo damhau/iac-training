@@ -5,6 +5,8 @@ title: "Step 4: make a tracked change"
 Add a secondary NTP server:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: |-
   echo "ntp server 10.0.0.2" >> devices/core-sw01.cfg
 ```
@@ -14,6 +16,8 @@ text: |-
 See exactly what changed:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git diff
 ```
 
@@ -29,14 +33,20 @@ output fills the screen and ends with `:`, press `q` to get your prompt back.
 Stage and commit the change:
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git add devices/core-sw01.cfg
 ```
 
 ```workshop:copy
+prefix: Copy
+title: click, then paste into the terminal
 text: git commit -m "Add secondary NTP server to core-sw01"
 ```
 
 ```examiner:execute-test
+prefix: Check
+description: Click to check this step
 name: ntp-commit
 title: The secondary NTP server is committed
 ```
