@@ -1,0 +1,18 @@
+#!/bin/bash
+# Step 6: main has its own commit with a different syslog target, which the
+# feature branch doesn't have. Still true after the merge in step 7.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+has_branch feature/add-syslog ||
+    fail "no branch feature/add-syslog yet: do step 5 first"
+has_branch main ||
+    fail "no branch main: did git init run with the session's defaults? git branch -m main renames the current branch"
+
+commit=$(g log --full-history feature/add-syslog..main --format=%h -G'logging host 10\.0\.0\.99' -- devices/core-sw01.cfg | tail -n 1)
+[ -n "$commit" ] ||
+    fail "main has no commit of its own adding 'logging host 10.0.0.99': git switch main, add the line, then git commit -am \"Add different syslog target on main\""
+
+pass "main ($commit) and feature/add-syslog have diverged"

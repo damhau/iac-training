@@ -1,0 +1,10 @@
+# Sourced by every terminal shell. Shows the branch and any merge or revert
+# in progress in the prompt, as the instructions describe:
+#   ~/exercises/netops-lab (main|MERGING)$
+# '*' after the branch: unstaged changes; '+': staged changes.
+
+if [ -f /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
+    . /usr/share/git-core/contrib/completion/git-prompt.sh
+    GIT_PS1_SHOWDIRTYSTATE=1
+    PS1='\[\e[1;34m\]\w\[\e[0m\]$(__git_ps1 " (%s)")\$ '
+fi

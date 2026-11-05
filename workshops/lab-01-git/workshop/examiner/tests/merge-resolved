@@ -1,0 +1,38 @@
+#!/bin/bash
+# Step 7: feature/add-syslog is merged into main, the conflict is resolved,
+# and main keeps 10.0.0.50 as its only syslog target.
+#
+# The file is read on main rather than in the merge commit, so a learner who
+# committed the markers and fixed them in a later commit still passes.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+[ ! -f "$REPO/.git/MERGE_HEAD" ] ||
+    fail "the merge is still in progress: fix devices/core-sw01.cfg, git add it, then git commit (or git merge --abort to start over)"
+
+has_branch feature/add-syslog ||
+    fail "no branch feature/add-syslog: do steps 5 and 6 first"
+
+merge=""
+for commit in $(g rev-list --merges main); do
+    # The merged parent is (an ancestor of) the feature branch's tip.
+    if g merge-base --is-ancestor "$commit^2" feature/add-syslog; then
+        merge=$commit
+        break
+    fi
+done
+[ -n "$merge" ] ||
+    fail "main has no merge commit for feature/add-syslog yet: git switch main, then git merge feature/add-syslog"
+
+config=$(g show main:devices/core-sw01.cfg)
+
+! grep -qE '^(<<<<<<<|=======|>>>>>>>)' <<<"$config" ||
+    fail "devices/core-sw01.cfg on main still has conflict markers: delete the <<<<<<<, ======= and >>>>>>> lines, then git commit -am \"Remove conflict markers\""
+
+targets=$(grep '^logging host' <<<"$config" | paste -sd, -)
+[ "$targets" = "logging host 10.0.0.50" ] ||
+    fail "core-sw01 on main should keep exactly one syslog target, logging host 10.0.0.50; it has: ${targets:-none}"
+
+pass "merged in $(g rev-parse --short "$merge"), keeping 10.0.0.50"

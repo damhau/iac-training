@@ -1,0 +1,54 @@
+# Lab 1 as an Educates workshop. Argo CD applies it (the educates-portal-iac
+# Application in k8s-argocd, through ../../kustomization.yaml) and the iac
+# TrainingPortal lists it.
+#
+# Each new session downloads this folder from main (newRootPath), so a pushed
+# change to the instructions, setup or checks reaches the next session started.
+# Changes to this file make the portal replace the workshop environment
+# (portal.updates.workshop).
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: lab-01-git
+spec:
+  title: "Lab 1: version your network configs"
+  description: >-
+    Session 1, Git. Treat a folder of mock network configs the way you would
+    treat real device configs: init, commit, diff, branch, resolve a merge
+    conflict, and roll back with revert.
+  url: https://github.com/damhau/iac-training/tree/main/workshops/lab-01-git
+  difficulty: beginner
+  duration: 2h
+  vendor: dhconsulting.ch
+  tags:
+    - git
+    - netops
+  workshop:
+    # The default base image (Fedora) already has git, nano and the git
+    # prompt script.
+    files:
+      - git:
+          url: https://github.com/damhau/iac-training
+          ref: origin/main
+        # vendir applies includePaths before newRootPath, to the repo's full
+        # paths; with no includePaths the whole folder is used.
+        newRootPath: workshops/lab-01-git
+  session:
+    namespaces:
+      security:
+        # Git only: no Kubernetes token in the session, so a learner's shell
+        # can't reach the cluster API.
+        token:
+          enabled: false
+    applications:
+      # VS Code in the browser, opened on ~/exercises; its merge view helps
+      # in step 7. Raises the session's memory from 512Mi to 1Gi.
+      editor:
+        enabled: true
+      # The check buttons (workshop/examiner/tests).
+      examiner:
+        enabled: true
+      # The last page's download of the learner's repository as a bundle.
+      files:
+        enabled: true
+        directory: exercises

@@ -1,0 +1,3 @@
+# Hugo's output when the instructions are rendered in a session.
+workshop/.hugo_build.lock
+workshop/public

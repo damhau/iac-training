@@ -1,0 +1,8 @@
+#!/bin/bash
+# Step 1: netops-lab is a Git repository.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+pass "$REPO is a repository"

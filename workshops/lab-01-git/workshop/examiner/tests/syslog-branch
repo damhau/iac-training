@@ -1,0 +1,14 @@
+#!/bin/bash
+# Step 5: feature/add-syslog carries the committed syslog target.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+has_branch feature/add-syslog ||
+    fail "no branch feature/add-syslog: git switch -c feature/add-syslog"
+
+g show feature/add-syslog:devices/core-sw01.cfg 2>/dev/null | grep -qxF 'logging host 10.0.0.50' ||
+    fail "feature/add-syslog has no committed 'logging host 10.0.0.50': add the line, then git commit -am \"Add syslog target to core-sw01\""
+
+pass "feature/add-syslog has the syslog target"

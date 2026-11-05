@@ -1,0 +1,8 @@
+# The Workshop definitions Argo CD applies to the cluster: the
+# educates-portal-iac Application in k8s-argocd reads this folder, next to
+# the TrainingPortal that lists them. Add a lab here and to the portal's
+# workshops list.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - lab-01-git/resources/workshop.yaml

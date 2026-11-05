@@ -1,0 +1,16 @@
+#!/bin/bash
+# Step 4: a commit adds the secondary NTP server to core-sw01.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+commit=$(g log --full-history --all --format=%h -G'ntp server 10\.0\.0\.2' -- devices/core-sw01.cfg | tail -n 1)
+if [ -z "$commit" ]; then
+    if grep -qxF 'ntp server 10.0.0.2' "$REPO/devices/core-sw01.cfg" 2>/dev/null; then
+        fail "the NTP line is in the file but not committed: git add devices/core-sw01.cfg then git commit"
+    fi
+    fail "devices/core-sw01.cfg has no 'ntp server 10.0.0.2' line yet"
+fi
+
+pass "commit $commit adds the secondary NTP server"

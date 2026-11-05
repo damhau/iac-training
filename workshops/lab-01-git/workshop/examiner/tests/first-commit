@@ -1,0 +1,24 @@
+#!/bin/bash
+# Steps 2 and 3: the two configs and .gitignore are committed.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+g rev-parse --quiet --verify HEAD >/dev/null ||
+    fail "no commit yet: git add . then git commit -m \"Initial config baseline for core-sw01 and edge-rtr01\""
+
+committed=$(g ls-tree -r --name-only HEAD)
+for file in .gitignore devices/core-sw01.cfg devices/edge-rtr01.cfg; do
+    if ! grep -qxF "$file" <<<"$committed"; then
+        if [ -e "$REPO/$file" ]; then
+            fail "$file exists but isn't committed: git add . then git commit"
+        fi
+        fail "$file is missing: create it as in step 2, then git add . and git commit"
+    fi
+done
+
+g show HEAD:.gitignore | grep -qxF '*.log' ||
+    fail ".gitignore should contain the line *.log"
+
+pass "the baseline is committed"

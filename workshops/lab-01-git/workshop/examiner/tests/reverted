@@ -1,0 +1,29 @@
+#!/bin/bash
+# Step 8: the commit removing the primary NTP server is reverted on main.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+
+[ ! -f "$REPO/.git/REVERT_HEAD" ] ||
+    fail "the revert is still in progress: git revert --continue, then close nano with Ctrl+X"
+
+# The oldest commit touching the line is the one that added it; the revert,
+# which removes it, also matches.
+bad=$(g log --full-history main --format=%H -G'no ntp server 10\.0\.0\.1' -- devices/core-sw01.cfg | tail -n 1)
+[ -n "$bad" ] ||
+    fail "no commit on main adds 'no ntp server 10.0.0.1' yet: make the bad change and commit it (start of step 8)"
+
+revert=$(g log main --format=%h --grep="This reverts commit $bad" | head -n 1)
+if [ -z "$revert" ]; then
+    # Closing nano with an emptied message aborts the commit but leaves the
+    # revert staged, and a second git revert then refuses to run.
+    g diff --cached --quiet ||
+        fail "the revert was aborted but its change is still staged: git restore --staged --worktree devices/core-sw01.cfg, then git revert HEAD again"
+    fail "commit $(g rev-parse --short "$bad") isn't reverted yet: git revert HEAD"
+fi
+
+! g show main:devices/core-sw01.cfg | grep -qxF 'no ntp server 10.0.0.1' ||
+    fail "core-sw01 on main still has the 'no ntp server 10.0.0.1' line"
+
+pass "commit $revert reverts $(g rev-parse --short "$bad")"

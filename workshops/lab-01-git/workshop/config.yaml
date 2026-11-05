@@ -1,0 +1,21 @@
+# The Hugo renderer's page order. Page titles come from each page's front
+# matter.
+pathways:
+  default: lab
+
+  paths:
+    lab:
+      title: "Lab 1: version your network configs"
+      steps:
+        - 00-overview
+        - 01-identity
+        - 02-init
+        - 03-configs
+        - 04-first-commit
+        - 05-diff
+        - 06-branch
+        - 07-main-changes
+        - 08-merge-conflict
+        - 09-revert
+        - 10-stretch
+        - 99-summary
