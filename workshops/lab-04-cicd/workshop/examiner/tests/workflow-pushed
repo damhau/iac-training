@@ -1,0 +1,29 @@
+#!/bin/bash
+# Step 1: .github/workflows/terraform.yml is on GitHub, on ci/add-pipeline,
+# with the pull request trigger and the fmt, validate and plan steps. Or on
+# main, once merged and the branch deleted.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+github_repo
+
+on_github() {
+    gh api "repos/$SLUG/contents/$WORKFLOW?ref=$1" -H "Accept: application/vnd.github.raw" 2>/dev/null
+}
+
+if ! workflow=$(on_github "$BRANCH") && ! workflow=$(on_github main); then
+    [ -f "$REPO/$WORKFLOW" ] ||
+        fail "no $WORKFLOW in tf-lab yet: from ~/exercises/tf-lab, mkdir -p .github/workflows, then paste the whole block (step 1)"
+    g cat-file -e "$BRANCH:$WORKFLOW" 2>/dev/null ||
+        fail "$WORKFLOW isn't committed on $BRANCH: git switch -c $BRANCH if the prompt doesn't show it, then git add and git commit (step 1)"
+    need_workflow_scope
+    fail "$BRANCH isn't on GitHub yet: git push -u origin $BRANCH"
+fi
+
+for want in 'pull_request:' 'terraform fmt -check' 'terraform validate' 'terraform plan'; do
+    grep -qF "$want" <<<"$workflow" ||
+        fail "the workflow on GitHub has no $want: paste the whole block again, then git commit -am and git push"
+done
+
+pass "$WORKFLOW is on github.com/$SLUG"

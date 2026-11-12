@@ -1,0 +1,19 @@
+#!/bin/bash
+# Step 2: a pull request from ci/add-pipeline into main, and the workflow ran
+# on it.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+base=$(pr_field baseRefName .baseRefName)
+[ "$base" = main ] ||
+    fail "pull request #$PR goes into $base: edit it on GitHub and set the base to main"
+
+first=$(runs pull_request "$BRANCH" | tail -n 1)
+[ -n "$first" ] ||
+    fail "pull request #$PR hasn't started the workflow: open its Checks tab, then the repository's Actions tab, to see why"
+
+read -r _ number _ <<<"$first"
+pass "pull request #$PR into main started the workflow: run #$number"

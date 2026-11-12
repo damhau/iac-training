@@ -1,0 +1,20 @@
+# The Hugo renderer's page order. Page titles come from each page's front
+# matter.
+pathways:
+  default: lab
+
+  paths:
+    lab:
+      title: "Lab 4: merge a PR, watch the pipeline run"
+      steps:
+        - 00-overview
+        - 01-sign-in
+        - 02-your-repo
+        - 03-workflow
+        - 04-pull-request
+        - 05-break
+        - 06-fix
+        - 07-merge
+        - 08-gated-apply
+        - 09-stretch
+        - 99-summary

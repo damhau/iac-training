@@ -1,0 +1,28 @@
+#!/bin/bash
+# Before you start: ~/exercises/tf-lab is a clone of github.com/<login>/tf-lab
+# (or the starter bundle, pointed at it and pushed), and GitHub's main has
+# main.tf.
+
+. "$(dirname "$0")/../lib.sh"
+
+find_repo
+github_repo
+
+url=$(g remote get-url origin 2>/dev/null) ||
+    fail "no remote named origin: git remote add origin https://github.com/$SLUG.git"
+shopt -s nocasematch
+case $url in
+    *.bundle) fail "origin still points at the starter bundle: git remote set-url origin https://github.com/$SLUG.git, then git push -u origin main" ;;
+    "https://github.com/$SLUG" | "https://github.com/$SLUG.git" | \
+        "git@github.com:$SLUG" | "git@github.com:$SLUG.git") ;;
+    *) fail "origin is $url, not your GitHub repository: git remote set-url origin https://github.com/$SLUG.git" ;;
+esac
+shopt -u nocasematch
+
+[ -n "$(g ls-remote --heads origin main 2>/dev/null)" ] ||
+    fail "main isn't on github.com/$SLUG yet: git push -u origin main"
+
+gh api "repos/$SLUG/contents/main.tf?ref=main" --silent 2>/dev/null ||
+    fail "GitHub's main has no main.tf: is this tf-lab from Session 3? If not, use the starter (Before you start: your tf-lab)"
+
+pass "${REPO/#"$HOME"/\~} is a clone of github.com/$SLUG, with main.tf"

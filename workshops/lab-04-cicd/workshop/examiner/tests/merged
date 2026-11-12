@@ -1,0 +1,21 @@
+#!/bin/bash
+# Step 5: the pull request is merged, and the push to main ran the workflow
+# on the merge commit, and passed.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+state=$(pr_field state .state)
+[ "$state" = MERGED ] ||
+    fail "pull request #$PR is ${state,,}, not merged: Merge pull request on GitHub (step 5)"
+
+merge=$(pr_field mergeCommit '.mergeCommit.oid // empty')
+line=$(runs push main | awk -v sha="$merge" '$5 == sha' | head -n 1)
+[ -n "$line" ] ||
+    fail "no run for the merge on main, ${merge:0:7}: does the workflow still have push, branches [ main ]? Open the Actions tab"
+
+need_success "$line" "for the merge on main"
+
+pass "pull request #$PR is merged, and run #$RUN passed on main"

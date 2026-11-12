@@ -1,0 +1,73 @@
+# Lab 4 as an Educates workshop. Argo CD applies it (the educates-portal-iac
+# Application in k8s-argocd, through ../../kustomization.yaml) and the hv-iac
+# TrainingPortal lists it.
+#
+# Each new session downloads this folder from main (newRootPath), so a pushed
+# change to the instructions, setup or checks reaches the next session started.
+# Changes to this file make the portal replace the workshop environment
+# (portal.updates.workshop).
+apiVersion: training.educates.dev/v1beta1
+kind: Workshop
+metadata:
+  name: lab-04-cicd
+spec:
+  title: "Lab 4: merge a PR, watch the pipeline run"
+  description: >-
+    Session 4, CI/CD. Add a GitHub Actions pipeline to tf-lab that checks and
+    plans every pull request, break it, fix it, and merge.
+  url: https://github.com/damhau/iac-training/tree/main/workshops/lab-04-cicd
+  difficulty: beginner
+  duration: 2h
+  vendor: dhconsulting.ch
+  tags:
+    - github-actions
+    - cicd
+    - terraform
+  workshop:
+    # Each entry is synced on its own, in this order, into /opt/assets/files,
+    # then copied into the learner's home, dot folders included. The first
+    # replaces the whole folder, so the others, inside it, must come after.
+    files:
+      - git:
+          url: https://github.com/damhau/iac-training
+          ref: origin/main
+        # vendir applies includePaths before newRootPath, to the repo's full
+        # paths; with no includePaths the whole folder is used.
+        newRootPath: workshops/lab-04-cicd
+      # Terraform, as in Lab 3, for terraform fmt in steps 3 and 4; the
+      # pipeline installs its own on the runner. Lands in ~/.local/bin, first
+      # on PATH. To upgrade: the version in both places, and the sha256 from
+      # the release's terraform_<version>_SHA256SUMS.
+      - path: .local/bin
+        http:
+          url: https://releases.hashicorp.com/terraform/1.17.1/terraform_1.17.1_linux_amd64.zip
+          sha256: 4638628058e71a55212b1c563712eac03b902128f40740f3dc8174df12135061
+        includePaths:
+          - terraform
+      # The GitHub CLI, as in Lab 2: learners sign in with it, and the checks
+      # read the pull request and its runs through it. In ~/bin, also on
+      # PATH; a folder of its own, since each entry replaces its folder. To
+      # upgrade: the version in all four places, and the sha256 from the
+      # release's checksums.txt.
+      - path: bin
+        http:
+          url: https://github.com/cli/cli/releases/download/v2.103.3/gh_2.103.3_linux_amd64.tar.gz
+          sha256: 4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d
+        includePaths:
+          - gh_2.103.3_linux_amd64/bin/gh
+        newRootPath: gh_2.103.3_linux_amd64/bin
+  session:
+    namespaces:
+      security:
+        # The pipeline runs on GitHub's runners, not here: no Kubernetes token
+        # in the session, so a learner's shell can't reach the cluster API.
+        token:
+          enabled: false
+    applications:
+      # VS Code in the browser, opened on ~/exercises: the workflow and
+      # main.tf. Raises the session's memory from 512Mi to 1Gi.
+      editor:
+        enabled: true
+      # The check buttons (workshop/examiner/tests).
+      examiner:
+        enabled: true

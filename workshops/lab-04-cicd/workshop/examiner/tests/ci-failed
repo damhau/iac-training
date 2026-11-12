@@ -1,0 +1,29 @@
+#!/bin/bash
+# Step 3: a run on the pull request failed on the Format check step.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+running="" other="" other_step=""
+while read -r id number status conclusion _; do
+    if [ "$status" != completed ]; then
+        running=$number
+        continue
+    fi
+    [ "$conclusion" = failure ] || continue
+    step=$(failed_step "$id")
+    [ "$step" != "Format check" ] ||
+        pass "run #$number failed on Format check: CI caught it"
+    if [ -z "$other" ]; then
+        other=$number
+        other_step=${step:-the workflow file}
+    fi
+done < <(runs pull_request "$BRANCH")
+
+[ -z "$running" ] ||
+    fail "run #$running is still running: wait for it on the pull request, then check again"
+[ -z "$other" ] ||
+    fail "run #$other failed on $other_step, not on Format check: open it in the Actions tab to read why, fix it, then do step 3 again"
+fail "no run has failed on pull request #$PR yet: two spaces in front of for_each in main.tf, git commit -am, git push (step 3)"

@@ -1,0 +1,17 @@
+#!/bin/bash
+# Step 4: the run for the pull request's last commit passed.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_repo
+find_pr
+
+head=$(pr_field headRefOid .headRefOid)
+line=$(runs pull_request "$BRANCH" | awk -v sha="$head" '$5 == sha' | head -n 1)
+[ -n "$line" ] ||
+    fail "no run yet for the pull request's last commit, ${head:0:7}: wait a few seconds, then check again"
+
+need_success "$line" "for the pull request's last commit" \
+    "read why on the pull request's Checks tab, fix it, then git commit -am and git push (step 4)"
+
+pass "run #$RUN passed on the last commit of pull request #$PR, ${head:0:7}"

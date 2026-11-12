@@ -1,0 +1,15 @@
+#!/bin/bash
+# Before you start: gh is signed in to github.com with the workflow scope, and
+# Git uses it for HTTPS.
+
+. "$(dirname "$0")/../lib.sh"
+
+github_login
+
+git config --global --get-all credential.https://github.com.helper 2>/dev/null |
+    grep -q 'auth git-credential' ||
+    fail "signed in as $LOGIN, but git push won't use it: gh auth setup-git"
+
+need_workflow_scope
+
+pass "signed in to GitHub as $LOGIN, allowed to push a workflow"
