@@ -46,6 +46,7 @@ lab-01-git/
     profile                 sourced by every terminal (the prompt)
     examiner/lib.sh         shared by the checks
     examiner/tests/*        the checks the "check" blocks run: exit 0 = passed
+    slides/                 the session's deck as a PDF, and the index.html the Slides tab shows
   exercises/                the learner's working folder: the terminal and the editor open here
 ```
 

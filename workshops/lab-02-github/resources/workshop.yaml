@@ -66,3 +66,6 @@ spec:
       uploads:
         enabled: true
         directory: uploads
+      # The Session 2 deck (workshop/slides), as a dashboard tab.
+      slides:
+        enabled: true

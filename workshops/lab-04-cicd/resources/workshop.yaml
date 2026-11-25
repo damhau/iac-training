@@ -71,3 +71,6 @@ spec:
       # The check buttons (workshop/examiner/tests).
       examiner:
         enabled: true
+      # The Session 4 deck (workshop/slides), as a dashboard tab.
+      slides:
+        enabled: true

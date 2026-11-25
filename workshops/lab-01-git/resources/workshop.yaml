@@ -52,3 +52,6 @@ spec:
       files:
         enabled: true
         directory: exercises
+      # The Session 1 deck (workshop/slides), as a dashboard tab.
+      slides:
+        enabled: true
